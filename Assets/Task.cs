@@ -23,17 +23,19 @@ public class MyTask<T>
 }
 
 
-public struct MyTaskAwaiter<T> :  INotifyCompletion
+public class MyTaskAwaiter<T> :  INotifyCompletion
 {
     private bool isCompleted;
     private T result;
-    private Action onFinished;
+    private List<Action> onFinished;
     public bool IsCompleted => isCompleted;
 
     public T GetResult() => result;
 
     public void StartCoroutine(IEnumerator coroutine)
     {
+        isCompleted = false;
+        onFinished = new List<Action>();
         CoroutineContainer.Instance.StartCoroutine(Wrapper(coroutine));
     }
     
@@ -45,7 +47,8 @@ public struct MyTaskAwaiter<T> :  INotifyCompletion
         }
         else
         {
-            onFinished = continuation;
+            Debug.Log("OnCompleted " + continuation);
+            onFinished.Add(continuation);
         }
     }
 
@@ -67,7 +70,10 @@ public struct MyTaskAwaiter<T> :  INotifyCompletion
         Debug.Log("isCompleted true");
 
         isCompleted = true;
-        onFinished?.Invoke();
+        foreach (var action in onFinished)
+        {
+            action?.Invoke();
+        }
     }
 
 }

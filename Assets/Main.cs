@@ -8,14 +8,15 @@ public class Main : MonoBehaviour
     async void Start()
     {
         print(1);
-        var val = await new MyTask<int>(Coroutine());
+        var myTask = new MyTask<int>(Coroutine());
+        var val = await myTask;
         print(2);
         print(val);
     }
 
     IEnumerator Coroutine()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         yield return 11;
     }
 }
